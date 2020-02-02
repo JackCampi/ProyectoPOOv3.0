@@ -7,7 +7,7 @@ from PyQt5 import QtWidgets, uic
 class Dialog(QtWidgets.QDialog):
     def __init__(self, _format, modify=False):
         super().__init__()
-        uic.loadUi(r"gui\dialogs\metadata.ui", self)
+        uic.loadUi(r"metadata.ui", self)
 
         self.setPath.clicked.connect(self.click)
 
