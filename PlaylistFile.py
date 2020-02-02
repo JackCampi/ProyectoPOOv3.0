@@ -1,8 +1,8 @@
 class Playlist:
-    def __init__(self):
+    def __init__(self, name, format, path):
         self.playlistList = []
-        self.format
-        self.playlistName
+        self.format = format
+        self.playlistName = name
         self.path
 
 class PlaylistList:
