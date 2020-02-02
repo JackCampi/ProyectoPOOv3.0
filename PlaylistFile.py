@@ -3,6 +3,7 @@ class Playlist:
         self.playlistList = []
         self.format = format
         self.playlistName = name
-        self.path
+        self.path = = self.path = _format + os.sep + "playlists" + os.sep + name + ".txt"
 
 class PlaylistList:
+    def __init__(self)
