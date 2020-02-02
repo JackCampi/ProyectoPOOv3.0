@@ -8,10 +8,19 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from tkinter import messagebox
+import metadata
+import addToPlaylist
+import modifyPlaylist
+import Format
+import newPlaylist
+import TableManagement
+import Files
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        self._format = "music"
+        self.currentList = "Main_list"
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
         MainWindow.setMinimumSize(QtCore.QSize(800, 600))
@@ -35,6 +44,7 @@ class Ui_MainWindow(object):
         self.musicFormatButton.setIconSize(QtCore.QSize(80, 64))
         self.musicFormatButton.setFlat(True)
         self.musicFormatButton.setObjectName("musicFormatButton")
+        self.musicFormatButton.clicked.connect(self.changeToMusicFormat()) #Conecta el botón de música con el método de cambiar el formato.
         self.formatLayout.addWidget(self.musicFormatButton)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.formatLayout.addItem(spacerItem1)
@@ -46,11 +56,13 @@ class Ui_MainWindow(object):
         self.picturesFormatButton.setIconSize(QtCore.QSize(80, 64))
         self.picturesFormatButton.setFlat(True)
         self.picturesFormatButton.setObjectName("picturesFormatButton")
+        self.picturesFormatButton.clicked.connect(self.changeToPicturesFormat())
         self.formatLayout.addWidget(self.picturesFormatButton)
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.formatLayout.addItem(spacerItem2)
         self.VideoFormatButton = QtWidgets.QPushButton(self.horizontalLayoutWidget)
         self.VideoFormatButton.setText("")
+        self.VideoFormatButton.clicked.connect(self.changeToVideosFormat())
         icon2 = QtGui.QIcon()
         icon2.addPixmap(QtGui.QPixmap("Icons/video_format2.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.VideoFormatButton.setIcon(icon2)
@@ -83,6 +95,7 @@ class Ui_MainWindow(object):
         self.addButton.setFlat(True)
         self.addButton.setObjectName("addButton")
         self.toolsLayout.addWidget(self.addButton)
+        self.addButton.clicked.connect(self.elementInterface())
         self.modifyButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
         self.modifyButton.setText("")
         icon4 = QtGui.QIcon()
@@ -92,6 +105,7 @@ class Ui_MainWindow(object):
         self.modifyButton.setFlat(True)
         self.modifyButton.setObjectName("modifyButton")
         self.toolsLayout.addWidget(self.modifyButton)
+        self.modifyButton.clicked.connect(self.elementInterface(True))
         self.removeButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
         self.removeButton.setText("")
         icon5 = QtGui.QIcon()
@@ -101,6 +115,7 @@ class Ui_MainWindow(object):
         self.removeButton.setFlat(True)
         self.removeButton.setObjectName("removeButton")
         self.toolsLayout.addWidget(self.removeButton)
+        self.removeButton.clicked.connect(self.removeElement())
         self.addPlaylistButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
         self.addPlaylistButton.setText("")
         icon6 = QtGui.QIcon()
@@ -110,6 +125,7 @@ class Ui_MainWindow(object):
         self.addPlaylistButton.setFlat(True)
         self.addPlaylistButton.setObjectName("addPlaylistButton")
         self.toolsLayout.addWidget(self.addPlaylistButton)
+        self.addPlaylistButton.clicked.connect(self.addPlaylistInterface())
         self.removePlaylistButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
         self.removePlaylistButton.setText("")
         icon7 = QtGui.QIcon()
@@ -118,16 +134,18 @@ class Ui_MainWindow(object):
         self.removePlaylistButton.setIconSize(QtCore.QSize(32, 32))
         self.removePlaylistButton.setFlat(True)
         self.removePlaylistButton.setObjectName("removePlaylistButton")
+        self.removePlaylistButton.clicked.connect(self.removePlaylist())
         self.toolsLayout.addWidget(self.removePlaylistButton)
-        self.addToPlaylistButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
-        self.addToPlaylistButton.setText("")
+        self.modifyPlaylistButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
+        self.modifyPlaylistButton.setText("")
         icon8 = QtGui.QIcon()
         icon8.addPixmap(QtGui.QPixmap("Icons/añadirAPlaylist.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.addToPlaylistButton.setIcon(icon8)
-        self.addToPlaylistButton.setIconSize(QtCore.QSize(32, 32))
-        self.addToPlaylistButton.setFlat(True)
-        self.addToPlaylistButton.setObjectName("addToPlaylistButton")
-        self.toolsLayout.addWidget(self.addToPlaylistButton)
+        self.modifyPlaylistButton.setIcon(icon8)
+        self.modifyPlaylistButton.setIconSize(QtCore.QSize(32, 32))
+        self.modifyPlaylistButton.setFlat(True)
+        self.modifyPlaylistButton.setObjectName("modifyPlaylistButton")
+        self.toolsLayout.addWidget(self.modifyPlaylistButton)
+        self.modifyPlaylistButton.clicked.connect(self.modifyPlaylistInterface())
         self.itemsTable = QtWidgets.QTableWidget(self.centralwidget)
         self.itemsTable.setGeometry(QtCore.QRect(199, 150, 601, 370))
         self.itemsTable.setWhatsThis("")
@@ -179,16 +197,111 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+    def changeToMusicFormat(self):
+        self._format = "music"
+        self.currentList = "Main_list"
+        self.formatMenu.headerItem().setText(0, "MÚSICA")
+        self.formatMenu.topLevelItem(0).setText(0, "Mi Música")
+        item = self.itemsTable.horizontalHeaderItem(1)
+        item.setText("Artista")
+        item = self.itemsTable.horizontalHeaderItem(4)
+        item.setText("Género")
+        self.formatMenuUpdate()
+
+    def changeToVideosFormat(self):
+        self._format = "videos"
+        self.currentList = "Main_list"
+        self.formatMenu.headerItem().setText(0, "VIDEOS")
+        self.formatMenu.topLevelItem(0).setText(0, "Mis Videos")
+        item = self.itemsTable.horizontalHeaderItem(1)
+        item.setText("Autor")
+        item = self.itemsTable.horizontalHeaderItem(4)
+        item.setText("Género")
+        self.formatMenuUpdate()
+
+    def changeToPicturesFormat(self):
+        self._format = "pictures"
+        self.currentList = "Main_list"
+        self.formatMenu.headerItem().setText(0, "FOTOS")
+        self.formatMenu.topLevelItem(0).setText(0, "Mis Fotos")
+        item = self.itemsTable.horizontalHeaderItem(1)
+        item.setText("Autor")
+        item = self.itemsTable.horizontalHeaderItem(4)
+        item.setText("Tipo")
+        self.formatMenuUpdate()
+
+    def formatMenuUpdate(self):
+        self.playlistList = Files.PlaylistList(self._format)
+        self.playlists = self.playlistList.GetPlaylists()
+        playlistItem = self.formatMenu.topLevelItem(1) #devuelve un QTreeWidgetItem "playlist"
+        for item in self.playlists:
+            newItem = QtWidgets.QTreeWidgetItem(playlistItem)
+            newItem.setText(item)
+            newItem.clicked.connect(self.itemsTableUpdate())  #Queda pendiente xd
+
+    def itemsTableUpdate(self):
+        pass
+        #funcion creada por juan. Debe actualizar los datos de la tabla de los items
+
+    def addPlaylistInterface(self):
+        self._interface = newPlaylist.Dialog(self._format, self.currentList)
+
+    def modifyPlaylistInterface(self):
+        self._interface = addToPlaylist.Dialog(self._format) #hablar con juan acerca de addToPlaylist y modifyPlaylist
+
+    def removePlaylist(self):
+        if self.currentList == "Main_list":
+            messagebox.showinfo(message="No se puede eliminar la lista principal", title="Alerta")
+            return
+        self.answer = messagebox.askyesno(message="¿Desea eliminar {0}?".format(self.currentList),title="Alerta")
+        self.playlistToRemove = Files.Playlist(self._format,self.currentList)
+        if self.anwer == True:
+            self.playlistToRemove.DeletePlaylist()
+        else:
+            return
+        self.formatMenuUpdate()
+        self.currentList = "Main_list"
+
+    def elementInterface(self, modify=False):
+        self._interface = metadata.Dialog(self._format,modify)
+
+    def removeElement(self):
+        if self.itemsTable.currentRow() == None:
+            messagebox.showinfo(message="Seleccione primero el elemento que desea eliminar.", title="Alerta")
+            return
+        rowSelected = self.itemsTable.currentRow()
+        itemSelectedName = self.itemsTable.item(rowSelected,0).text()
+        itemSelectedAuthor = self.itemsTable.item(rowSelected,1).text()
+        itemSelectedAlbum = self.itemsTable.item(rowSelected,2).text()
+        itemSelectedYear = self.itemsTable.item(rowSelected,3).text()
+        itemSelectedType = self.itemsTable.item(rowSelected,4).text()
+        self.elementToDelete = Format.Format(itemSelectedName,itemSelectedAuthor,itemSelectedAlbum,itemSelectedYear,itemSelectedType,"")
+        if self.currentList == "Main_list":
+            self.objectList = Files.MainList(self._format)
+        else:
+            self.objectList = Files.Playlist(self._format,self.currentList)
+
+        for element in self.objectList:
+            if element == self.elementToDelete:
+                self.answer = messagebox.askyesno(message="¿Desea eliminar {0}?".format(element.getName()))
+                if self.answer == True:
+                    self.objectList.DeleteEntry(element)
+                else:
+                    return
+                break
+
+
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Inicio"))
         self.appNameLabel.setText(_translate("MainWindow", "UNALPLAY"))
-        self.addToPlaylistButton.setWhatsThis(_translate("MainWindow", "eliminar playlist"))
+        self.modifyPlaylistButton.setWhatsThis(_translate("MainWindow", "eliminar playlist"))
         self.itemsTable.setSortingEnabled(True)
         item = self.itemsTable.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Nombre"))
         item = self.itemsTable.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "Autor"))
+        item.setText(_translate("MainWindow", "Artista"))
         item = self.itemsTable.horizontalHeaderItem(2)
         item.setText(_translate("MainWindow", "Álbum"))
         item = self.itemsTable.horizontalHeaderItem(3)
