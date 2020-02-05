@@ -8,6 +8,6 @@ class Dialog(QtWidgets.QDialog):
         uic.loadUi("modifyPlaylist.ui", self)
 
         self._format = _format
-        self.playlistName.setText(name)
+        #self.playlistName.setText(name)
         self.tableWidget = TableManagement.TableManagement(_format, name)
         self.tableWidget.setGeometry(20, 30, 531, 21)

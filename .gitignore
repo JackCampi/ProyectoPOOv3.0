@@ -1,0 +1,5 @@
+# Created by .ignore support plugin (hsz.mobi)
+
+# Ignorando archivos de IDEs
+/.idea/*
+/__pycache__/*

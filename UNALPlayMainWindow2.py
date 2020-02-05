@@ -8,6 +8,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import tkinter as tk
 from tkinter import messagebox
 import metadata
 import addToPlaylist
@@ -21,6 +22,11 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         self._format = "music"
         self.currentList = "Main_list"
+        self.constructor = Format.Music
+
+        root = tk.Tk()
+        root.withdraw()  # Para evitar la ventana random del tkinter
+
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
         MainWindow.setMinimumSize(QtCore.QSize(800, 600))
@@ -137,31 +143,10 @@ class Ui_MainWindow(object):
         self.modifyPlaylistButton.setFlat(True)
         self.modifyPlaylistButton.setObjectName("modifyPlaylistButton")
         self.toolsLayout.addWidget(self.modifyPlaylistButton)
-        self.itemsTable = QtWidgets.QTableWidget(self.centralwidget)
+
+        self.itemsTable = TableManagement.TableManagement(self._format, self.centralwidget)
         self.itemsTable.setGeometry(QtCore.QRect(199, 150, 601, 370))
-        self.itemsTable.setWhatsThis("")
-        self.itemsTable.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.itemsTable.setAlternatingRowColors(False)
-        self.itemsTable.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.itemsTable.setGridStyle(QtCore.Qt.SolidLine)
-        self.itemsTable.setCornerButtonEnabled(True)
-        self.itemsTable.setObjectName("itemsTable")
-        self.itemsTable.setColumnCount(5)
-        self.itemsTable.setRowCount(0)
-        item = QtWidgets.QTableWidgetItem()
-        self.itemsTable.setHorizontalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.itemsTable.setHorizontalHeaderItem(1, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.itemsTable.setHorizontalHeaderItem(2, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.itemsTable.setHorizontalHeaderItem(3, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.itemsTable.setHorizontalHeaderItem(4, item)
-        self.itemsTable.horizontalHeader().setVisible(True)
-        self.itemsTable.horizontalHeader().setCascadingSectionResizes(False)
-        self.itemsTable.horizontalHeader().setDefaultSectionSize(119)
-        self.itemsTable.verticalHeader().setVisible(False)
+
         self.formatMenu = QtWidgets.QTreeWidget(self.centralwidget)
         self.formatMenu.setEnabled(True)
         self.formatMenu.setGeometry(QtCore.QRect(0, 80, 200, 440))
@@ -184,6 +169,7 @@ class Ui_MainWindow(object):
         self.searchButton.setFlat(True)
         self.searchButton.setObjectName("searchButton")
         MainWindow.setCentralWidget(self.centralwidget)
+
         self.musicFormatButton.clicked.connect(self.changeToMusicFormat)
         self.picturesFormatButton.clicked.connect(self.changeToPicturesFormat)
         self.VideoFormatButton.clicked.connect(self.changeToVideosFormat)
@@ -191,7 +177,7 @@ class Ui_MainWindow(object):
         self.removePlaylistButton.clicked.connect(self.removePlaylist)
         self.addPlaylistButton.clicked.connect(self.addPlaylistInterface)
         self.removeButton.clicked.connect(self.removeElement)
-        #self.modifyButton.clicked.connect(self.elementInterface(True))
+        self.modifyButton.clicked.connect(self.modifyElementInterface)
         self.addButton.clicked.connect(self.elementInterface)
 
         self.retranslateUi(MainWindow)
@@ -200,34 +186,52 @@ class Ui_MainWindow(object):
     def changeToMusicFormat(self):
         self._format = "music"
         self.currentList = "Main_list"
+        self.constructor = Format.Music
+
         self.formatMenu.headerItem().setText(0, "MÚSICA")
         self.formatMenu.topLevelItem(0).setText(0, "Mi Música")
+
+        self.itemsTable.Update(self._format)
+
         item = self.itemsTable.horizontalHeaderItem(1)
         item.setText("Artista")
         item = self.itemsTable.horizontalHeaderItem(4)
         item.setText("Género")
+
         self.formatMenuUpdate()
 
     def changeToVideosFormat(self):
         self._format = "videos"
         self.currentList = "Main_list"
+        self.constructor = Format.Videos
+
         self.formatMenu.headerItem().setText(0, "VIDEOS")
         self.formatMenu.topLevelItem(0).setText(0, "Mis Videos")
+
+        self.itemsTable.Update(self._format)
+
         item = self.itemsTable.horizontalHeaderItem(1)
         item.setText("Autor")
         item = self.itemsTable.horizontalHeaderItem(4)
         item.setText("Género")
+
         self.formatMenuUpdate()
 
     def changeToPicturesFormat(self):
         self._format = "pictures"
         self.currentList = "Main_list"
+        self.constructor = Format.Pictures
+
         self.formatMenu.headerItem().setText(0, "FOTOS")
         self.formatMenu.topLevelItem(0).setText(0, "Mis Fotos")
+
+        self.itemsTable.Update(self._format)
+
         item = self.itemsTable.horizontalHeaderItem(1)
         item.setText("Autor")
         item = self.itemsTable.horizontalHeaderItem(4)
         item.setText("Tipo")
+
         self.formatMenuUpdate()
 
     def formatMenuUpdate(self):
@@ -245,9 +249,11 @@ class Ui_MainWindow(object):
 
     def addPlaylistInterface(self):
         self._interface = newPlaylist.Dialog(self._format, self.currentList)
+        self._interface.show()
 
     def modifyPlaylistInterface(self):
-        self._interface = addToPlaylist.Dialog(self._format) #hablar con juan acerca de addToPlaylist y modifyPlaylist
+        self._interface = addToPlaylist.Dialog(self._format, self.currentList) #hablar con juan acerca de addToPlaylist y modifyPlaylist
+        self._interface.show()
 
     def removePlaylist(self):
         if self.currentList == "Main_list":
@@ -262,33 +268,48 @@ class Ui_MainWindow(object):
         self.formatMenuUpdate()
         self.currentList = "Main_list"
 
-    def elementInterface(self, modify=False):
-        self._interface = metadata.Dialog(self._format,modify)
+    def elementInterface(self):
+        metadataDialog = metadata.Dialog(self._format,modify=False)
+        metadataDialog.show()
 
-    def removeElement(self):
-        if self.itemsTable.currentRow() == None:
+        if metadataDialog.exec_() and metadataDialog.accepted:
+            temp = metadataDialog.items()
+            elem = self.constructor(temp["name"], temp["author"],
+                                    temp["album"], temp["year"],
+                                    temp["type"], temp["path"])
+            self.itemsTable.mainList.AddEntry(elem)
+            self.itemsTable.LoadList()
+
+    def modifyElementInterface(self):
+        if len(self.itemsTable.selectedItems()) == 0:
             messagebox.showinfo(message="Seleccione primero el elemento que desea eliminar.", title="Alerta")
             return
-        rowSelected = self.itemsTable.currentRow()
-        itemSelectedName = self.itemsTable.item(rowSelected,0).text()
-        itemSelectedAuthor = self.itemsTable.item(rowSelected,1).text()
-        itemSelectedAlbum = self.itemsTable.item(rowSelected,2).text()
-        itemSelectedYear = self.itemsTable.item(rowSelected,3).text()
-        itemSelectedType = self.itemsTable.item(rowSelected,4).text()
-        self.elementToDelete = Format.Format(itemSelectedName,itemSelectedAuthor,itemSelectedAlbum,itemSelectedYear,itemSelectedType,"")
-        if self.currentList == "Main_list":
-            self.objectList = Files.MainList(self._format)
         else:
-            self.objectList = Files.Playlist(self._format,self.currentList)
+            metadataDialog = metadata.Dialog(self._format, modify=True)
+            metadataDialog.show()
 
-        for element in self.objectList:
-            if element == self.elementToDelete:
-                self.answer = messagebox.askyesno(message="¿Desea eliminar {0}?".format(element.getName()))
-                if self.answer == True:
-                    self.objectList.DeleteEntry(element)
-                else:
-                    return
-                break
+            if metadataDialog.exec_() and metadataDialog.accepted:
+                temp = metadataDialog.items()
+                newElement = self.constructor(temp["name"], temp["author"],
+                                        temp["album"], temp["year"],
+                                        temp["type"], temp["path"])
+
+                oldElement = self.itemsTable.getElement()
+                self.itemsTable.mainList.ModifyList(newElement, oldElement)
+                self.itemsTable.LoadList()
+
+    def removeElement(self):
+        if len(self.itemsTable.selectedItems()) == 0:
+            messagebox.showinfo(message="Seleccione primero el elemento que desea eliminar.", title="Alerta")
+            return
+        else:
+            oldElement = self.itemsTable.getElement()
+            userIsSure = messagebox.askyesno(message="¿Desea eliminar {0}?".format(oldElement.getName()), title="Eliminar elemento")
+            if userIsSure:
+                self.itemsTable.mainList.DeleteEntry(oldElement)
+                self.itemsTable.LoadList()
+            else:
+                return
 
 
 
@@ -308,6 +329,8 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "Año"))
         item = self.itemsTable.horizontalHeaderItem(4)
         item.setText(_translate("MainWindow", "Género"))
+        item = self.itemsTable.horizontalHeaderItem(5)
+        item.setText(_translate("MainWindow", "Reproducible"))
         self.formatMenu.headerItem().setText(0, _translate("MainWindow", "MÚSICA"))
         __sortingEnabled = self.formatMenu.isSortingEnabled()
         self.formatMenu.setSortingEnabled(False)
