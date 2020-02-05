@@ -23,6 +23,7 @@ class Ui_MainWindow(object):
         self._format = "music"
         self.currentList = "Main_list"
         self.constructor = Format.Music
+        self.mainList = Files.MainList(self._format)
 
         root = tk.Tk()
         root.withdraw()  # Para evitar la ventana random del tkinter
@@ -187,6 +188,7 @@ class Ui_MainWindow(object):
         self._format = "music"
         self.currentList = "Main_list"
         self.constructor = Format.Music
+        self.mainList = Files.MainList(self._format)
 
         self.formatMenu.headerItem().setText(0, "MÚSICA")
         self.formatMenu.topLevelItem(0).setText(0, "Mi Música")
@@ -204,6 +206,7 @@ class Ui_MainWindow(object):
         self._format = "videos"
         self.currentList = "Main_list"
         self.constructor = Format.Videos
+        self.mainList = Files.MainList(self._format)
 
         self.formatMenu.headerItem().setText(0, "VIDEOS")
         self.formatMenu.topLevelItem(0).setText(0, "Mis Videos")
@@ -221,6 +224,7 @@ class Ui_MainWindow(object):
         self._format = "pictures"
         self.currentList = "Main_list"
         self.constructor = Format.Pictures
+        self.mainList = Files.MainList(self._format)
 
         self.formatMenu.headerItem().setText(0, "FOTOS")
         self.formatMenu.topLevelItem(0).setText(0, "Mis Fotos")
@@ -248,8 +252,24 @@ class Ui_MainWindow(object):
         #funcion creada por juan. Debe actualizar los datos de la tabla de los items
 
     def addPlaylistInterface(self):
-        self._interface = newPlaylist.Dialog(self._format, self.currentList)
-        self._interface.show()
+        playlistDialog = newPlaylist.Dialog(self._format)
+        playlistDialog.show()
+
+        if playlistDialog.exec_() and playlistDialog.accepted:
+            temp = playlistDialog.Items()
+            name = temp["playlistName"]
+            elems = []
+            print(temp)
+            for i in temp["selectedEntries"]:
+                elem = self.constructor(i["name"], i["author"], i["album"], i["year"], i["type"], "")
+                elems.append(elem)
+
+            playlist = Files.Playlist(self._format, name)
+            for i in self.mainList.list:
+                if i in elems:
+                    playlist.AddEntry(i)
+
+            # Añadir al árbol
 
     def modifyPlaylistInterface(self):
         self._interface = addToPlaylist.Dialog(self._format, self.currentList) #hablar con juan acerca de addToPlaylist y modifyPlaylist
@@ -282,7 +302,7 @@ class Ui_MainWindow(object):
 
     def modifyElementInterface(self):
         if len(self.itemsTable.selectedItems()) == 0:
-            messagebox.showinfo(message="Seleccione primero el elemento que desea eliminar.", title="Alerta")
+            messagebox.showinfo(message="Seleccione primero el elemento que desea modificar.", title="Alerta")
             return
         else:
             metadataDialog = metadata.Dialog(self._format, modify=True)

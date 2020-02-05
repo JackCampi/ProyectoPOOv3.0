@@ -7,6 +7,7 @@ class TableManagement(QtWidgets.QTableWidget):
     def __init__(self, _format, parent=None):
         super().__init__(parent)
 
+        self.selectedEntries = []
         self._format = _format
         self.mainList = Files.MainList(_format)
         self.SetupUi()
@@ -39,10 +40,14 @@ class TableManagement(QtWidgets.QTableWidget):
 
         if self._format == "music":
             self.constructor = Format.Music
+            labels = ["Nombre", "Artista", "Álbum", "Año", "Género", "Reproducible"]
         elif self._format == "pictures":
             self.constructor = Format.Pictures
+            labels = ["Nombre", "Autor", "Álbum", "Año", "Tipo", "Reproducible"]
         elif self._format == "videos":
             self.constructor = Format.Videos
+            labels = ["Nombre", "Autor", "Álbum", "Año", "Género", "Reproducible"]
+        self.setHorizontalHeaderLabels(labels)
 
     def LoadList(self):
         self.setSortingEnabled(False)
@@ -70,7 +75,7 @@ class TableManagement(QtWidgets.QTableWidget):
 
         return self.constructor(elem["name"], elem["author"], elem["album"], elem["year"], elem["type"], "")
 
-    def __updateSelectedEntries(self):
+    def UpdateSelectedEntries(self):
         for row in range(self.rowCount()):
             item = self.item(row, 0)
             if item.isSelected():
@@ -85,8 +90,3 @@ class TableManagement(QtWidgets.QTableWidget):
         self._format = newFormat
         self.mainList = Files.MainList(newFormat)
         self.LoadList()
-
-    def Items(self):
-        self.__updateSelectedEntries()
-        items = {"newName": self.newName.text(), "selectedEntries": self.selectedEntries}
-        return items
