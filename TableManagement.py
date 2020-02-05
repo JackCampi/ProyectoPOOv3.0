@@ -90,3 +90,8 @@ class TableManagement(QtWidgets.QTableWidget):
         self._format = newFormat
         self.mainList = Files.MainList(newFormat)
         self.LoadList()
+
+    def UpdatePlaylist(self, newFormat, newPlaylist):
+        self._format = newFormat
+        self.mainList = Files.Playlist(newFormat, newPlaylist)
+        self.LoadList()

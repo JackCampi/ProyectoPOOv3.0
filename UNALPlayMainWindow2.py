@@ -180,6 +180,9 @@ class Ui_MainWindow(object):
         self.removeButton.clicked.connect(self.removeElement)
         self.modifyButton.clicked.connect(self.modifyElementInterface)
         self.addButton.clicked.connect(self.elementInterface)
+        self.formatMenu.itemSelectionChanged.connect(self.changeCurrentList)
+
+        self.formatMenuUpdate()
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -238,14 +241,30 @@ class Ui_MainWindow(object):
 
         self.formatMenuUpdate()
 
+    def changeCurrentList(self):
+        mainListItem = self.formatMenu.topLevelItem(0)  # devuelve un QTreeWidgetItem "mainList"
+        playlistItem = self.formatMenu.topLevelItem(1)  # devuelve un QTreeWidgetItem "playlist"
+
+        if mainListItem.isSelected():
+            self.currentList = "Main_list"
+            self.itemsTable.mainList = Files.MainList(self._format)
+            self.itemsTable.Update(self._format)
+        elif not playlistItem.isSelected():
+            self.currentList = self.formatMenu.selectedItems()[0].text(0)
+            self.itemsTable.UpdatePlaylist(self._format, self.currentList)
+
+        self.itemsTable.LoadList()
+
     def formatMenuUpdate(self):
         self.playlistList = Files.PlaylistList(self._format)
         self.playlists = self.playlistList.GetPlaylists()
-        playlistItem = self.formatMenu.topLevelItem(1) #devuelve un QTreeWidgetItem "playlist"
+        playlistItem = self.formatMenu.topLevelItem(1)  # devuelve un QTreeWidgetItem "playlist"
+        for i in playlistItem.takeChildren():
+            del i
         for item in self.playlists:
             newItem = QtWidgets.QTreeWidgetItem(playlistItem)
-            newItem.setText(item)
-            newItem.clicked.connect(self.itemsTableUpdate())  #Queda pendiente xd
+            newItem.setText(0, item)
+            #newItem.clicked.connect(self.itemsTableUpdate())  #Queda pendiente xd
 
     def itemsTableUpdate(self):
         pass
@@ -259,7 +278,6 @@ class Ui_MainWindow(object):
             temp = playlistDialog.Items()
             name = temp["playlistName"]
             elems = []
-            print(temp)
             for i in temp["selectedEntries"]:
                 elem = self.constructor(i["name"], i["author"], i["album"], i["year"], i["type"], "")
                 elems.append(elem)
@@ -269,7 +287,7 @@ class Ui_MainWindow(object):
                 if i in elems:
                     playlist.AddEntry(i)
 
-            # Añadir al árbol
+            self.formatMenuUpdate()  # Añadir al árbol
 
     def modifyPlaylistInterface(self):
         self._interface = addToPlaylist.Dialog(self._format, self.currentList) #hablar con juan acerca de addToPlaylist y modifyPlaylist
@@ -281,12 +299,16 @@ class Ui_MainWindow(object):
             return
         self.answer = messagebox.askyesno(message="¿Desea eliminar {0}?".format(self.currentList),title="Alerta")
         self.playlistToRemove = Files.Playlist(self._format,self.currentList)
-        if self.anwer == True:
+        if self.answer == True:
             self.playlistToRemove.DeletePlaylist()
         else:
             return
         self.formatMenuUpdate()
-        self.currentList = "Main_list"
+        mainListItem = self.formatMenu.topLevelItem(0)
+        playlistItem = self.formatMenu.topLevelItem(1)
+        mainListItem.setSelected(True)
+        playlistItem.setSelected(False)
+        self.changeCurrentList()
 
     def elementInterface(self):
         metadataDialog = metadata.Dialog(self._format,modify=False)
