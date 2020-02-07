@@ -9,6 +9,7 @@ class Dialog(QtWidgets.QDialog):
         self._format = _format
         self.tableWidget = TableManagement.TableManagement(_format, self)
         self.tableWidget.setGeometry(20, 110, 561, 321)
+        self.tableWidget.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
 
     def Items(self):
         self.tableWidget.UpdateSelectedEntries()

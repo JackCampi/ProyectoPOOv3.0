@@ -11,7 +11,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import tkinter as tk
 from tkinter import messagebox
 import metadata
-import addToPlaylist
 import modifyPlaylist
 import Format
 import newPlaylist
@@ -287,11 +286,35 @@ class Ui_MainWindow(object):
                 if i in elems:
                     playlist.AddEntry(i)
 
-            self.formatMenuUpdate()  # Añadir al árbol
+            self.formatMenuUpdate()
 
     def modifyPlaylistInterface(self):
-        self._interface = addToPlaylist.Dialog(self._format, self.currentList) #hablar con juan acerca de addToPlaylist y modifyPlaylist
-        self._interface.show()
+        if self.currentList == "Main_list":
+            messagebox.showinfo(message="La lista principal no se modifica de esta forma", title="Alerta")
+            return
+        modifyPlaylistDialog = modifyPlaylist.Dialog(self._format, self.currentList)
+        modifyPlaylistDialog.show()
+
+        if modifyPlaylistDialog.exec_() and modifyPlaylistDialog.accepted:
+            temp = modifyPlaylistDialog.Items()
+            newName = temp["newName"]
+            elems = []
+            for i in temp["selectedEntries"]:
+                elem = self.constructor(i["name"], i["author"], i["album"], i["year"], i["type"], "")
+                elems.append(elem)
+
+            playlist = Files.Playlist(self._format, self.currentList)
+            for i in self.mainList.list:
+                if i in elems:
+                    playlist.AddEntry(i)
+            playlist.ChangeName(newName)
+
+            mainListItem = self.formatMenu.topLevelItem(0)
+            playlistItem = self.formatMenu.topLevelItem(1)
+            mainListItem.setSelected(True)
+            playlistItem.setSelected(False)
+            self.changeCurrentList()
+            self.formatMenuUpdate()
 
     def removePlaylist(self):
         if self.currentList == "Main_list":
@@ -311,6 +334,9 @@ class Ui_MainWindow(object):
         self.changeCurrentList()
 
     def elementInterface(self):
+        if self.currentList != "Main_list":
+            messagebox.showinfo(message="No disponible para listas de reproducción", title="Alerta")
+            return
         metadataDialog = metadata.Dialog(self._format,modify=False)
         metadataDialog.show()
 
@@ -323,6 +349,9 @@ class Ui_MainWindow(object):
             self.itemsTable.LoadList()
 
     def modifyElementInterface(self):
+        if self.currentList != "Main_list":
+            messagebox.showinfo(message="No disponible para listas de reproducción", title="Alerta")
+            return
         if len(self.itemsTable.selectedItems()) == 0:
             messagebox.showinfo(message="Seleccione primero el elemento que desea modificar.", title="Alerta")
             return

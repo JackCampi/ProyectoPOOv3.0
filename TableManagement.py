@@ -4,11 +4,12 @@ import Format
 
 
 class TableManagement(QtWidgets.QTableWidget):
-    def __init__(self, _format, parent=None):
+    def __init__(self, _format, parent=None, filters=()):
         super().__init__(parent)
 
         self.selectedEntries = []
         self._format = _format
+        self.filters = filters
         self.mainList = Files.MainList(_format)
         self.SetupUi()
         self.LoadList()
@@ -53,7 +54,13 @@ class TableManagement(QtWidgets.QTableWidget):
         self.setSortingEnabled(False)
         self.clearContents()
         self.setRowCount(0)
-        for elem in self.mainList.list:
+
+        if len(self.filters) > 0:
+            listToLoad = [i for i in self.mainList.list if i not in self.filters]
+        else:
+            listToLoad = self.mainList.list
+
+        for elem in listToLoad:
             n = self.rowCount()
             self.setRowCount(n + 1)
             self.setItem(n, 0, QtWidgets.QTableWidgetItem(elem.getName()))
