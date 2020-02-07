@@ -91,7 +91,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Reproductor"))
         self.songAuthorLabel.setText(_translate("MainWindow", "SongAuthor"))
         self.songNameLabel.setText(_translate("MainWindow", "SongName"))
         self.songAlbumLabel.setText(_translate("MainWindow", "SongAlbum"))
