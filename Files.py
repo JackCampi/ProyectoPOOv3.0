@@ -160,6 +160,18 @@ class MainList(Lists):
         super().__init__(_format, name)
         self.Open()
 
+    def DeleteEntry(self, entry):
+        """
+        Recibe una entrada y la elimina de la self.list y del archivo, también hace lo mismo con las
+        playlist dependientes.
+
+        :param entry: Entrada que será eliminada (ver módulo Format).
+        """
+        super().DeleteEntry(entry)
+        for i in PlaylistList(self.format).GetPlaylists():
+            playlist = Playlist(self.format, i)
+            playlist.DeleteEntry(entry)
+
 
 class Playlist(Lists):
     """
@@ -191,6 +203,14 @@ class Playlist(Lists):
         """
         os.remove(self.path)
 
+    def ChangeName(self, newName):
+        """
+        Cambia el nombre del archivo de la playlist
+        """
+        if newName != "":
+            newPath = self.format + os.sep + "playlists" + os.sep + newName + ".txt"
+            os.replace(self.path, newPath)
+            self.path = newPath
 
 class PlaylistList:
     """
