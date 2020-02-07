@@ -18,9 +18,11 @@ class Dialog(QtWidgets.QDialog):
     def __setup(self, _format, modify):
         if modify:
             self.setWindowTitle("Modificar")
-
-        if _format == "pictures":
-            self.author.setText("Protagonista:")
+        if _format == "music":
+            self.author.setText("Artista:")
+            pass
+        elif _format == "pictures":
+            self.type.setText("Tipo:")
 
     def click(self):
         selectedFile = self.selectFilePath()
