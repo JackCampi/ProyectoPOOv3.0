@@ -95,7 +95,7 @@ class Ui_MainWindow(object):
         self.songAuthorLabel.setText(_translate("MainWindow", "SongAuthor"))
         self.songNameLabel.setText(_translate("MainWindow", "SongName"))
         self.songAlbumLabel.setText(_translate("MainWindow", "SongAlbum"))
-import Background_rc
+from Icons import Background_rc
 
 
 if __name__ == "__main__":
