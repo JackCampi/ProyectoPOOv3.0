@@ -263,7 +263,7 @@ class Ui_MainWindow(object):
         """Actualiza el contenido de la tabla de elementos con el cambio de selección
         del menú de formatos. Se muestra el contenido de la lista seleccionada."""
         mainListItem = self.formatMenu.topLevelItem(0)  # devuelve un QTreeWidgetItem "mainList"
-        playlistItem = self.formatMenu.topLevelItem(1)  # devuelve un QTreeWidgetItem "playlist"
+        playlistItem = self.formatMenu.topLevelItem(1)  # devuelve un QTreeWidgetItem "playlist".
 
         if mainListItem.isSelected():
             self.currentList = "Main_list"
