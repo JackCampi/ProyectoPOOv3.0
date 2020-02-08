@@ -419,10 +419,10 @@ class Ui_MainWindow(object):
                 self.currentListObject = Files.MainList(self._format)
             else:
                 self.currentListObject = Files.Playlist(self._format, self.currentList)
-            self.listT = []  # self.currentListObject.Search(self.text)
+            self.listToLoad = []  # self.currentListObject.Search(self.text)
             for object in self.currentListObject.list:
                 if self.textToSearch in object.getName():
-                    self.listT.append(object)
+                    self.listToLoad.append(object)
                 elif self.textToSearch in object.getAuthor():
                     self.listToLoad.append(object)
                 elif self.textToSearch in object.getAlbum():
@@ -435,7 +435,7 @@ class Ui_MainWindow(object):
             self.itemsTable.setSortingEnabled(False)
             self.itemsTable.clearContents()
             self.itemsTable.setRowCount(0)
-            for elem in self.listT:
+            for elem in self.listToLoad:
                 n = self.itemsTable.rowCount()
                 self.itemsTable.setRowCount(n + 1)
                 self.itemsTable.setItem(n, 0, QtWidgets.QTableWidgetItem(elem.getName()))
