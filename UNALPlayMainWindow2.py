@@ -18,7 +18,13 @@ import TableManagement
 import Files
 
 class Ui_MainWindow(object):
+    """Esta clase corresponde a la ventana principal de la aplicación. Aquí se
+    establecen las conexiones entre los botones y los métodos. En esta clase se
+    llaman diferentes módulos de código que aportan al funcionamiento del programa."""
     def setupUi(self, MainWindow):
+        """En este método se declaran todos los objetos de la interfaz gráfica,
+        desde los botones, hasta las tablas de elementos. Aquí se hacen las
+        conexiones entre botones y funciones."""
         self._format = "music"
         self.currentList = "Main_list"
         self.constructor = Format.Music
@@ -187,6 +193,10 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def changeToMusicFormat(self):
+        """cambia el formato sobre el que se está trabajando en la aplicación a Music,
+        así como los textos de las tablas y sus contenidos.
+        - Se ejecuta cuando se activa el botón de música.
+        - Cambia el formatMenu, la itemsTable."""
         self._format = "music"
         self.currentList = "Main_list"
         self.constructor = Format.Music
@@ -205,6 +215,10 @@ class Ui_MainWindow(object):
         self.formatMenuUpdate()
 
     def changeToVideosFormat(self):
+        """cambia el formato sobre el que se está trabajando en la aplicación a Videos,
+        así como los textos de las tablas y sus contenidos.
+        - Se ejecuta cuando se activa el botón de videos.
+        - Cambia el formatMenu, la itemsTable."""
         self._format = "videos"
         self.currentList = "Main_list"
         self.constructor = Format.Videos
@@ -223,6 +237,10 @@ class Ui_MainWindow(object):
         self.formatMenuUpdate()
 
     def changeToPicturesFormat(self):
+        """cambia el formato sobre el que se está trabajando en la aplicación a Pictures,
+        así como los textos de las tablas y sus contenidos.
+        - Se ejecuta cuando se activa el botón de Fotos.
+        - Cambia el formatMenu, la itemsTable."""
         self._format = "pictures"
         self.currentList = "Main_list"
         self.constructor = Format.Pictures
@@ -241,6 +259,8 @@ class Ui_MainWindow(object):
         self.formatMenuUpdate()
 
     def changeCurrentList(self):
+        """Actualiza el contenido de la tabla de elementos con el cambio de selección
+        del menú de formatos. Se muestra el contenido de la lista seleccionada."""
         mainListItem = self.formatMenu.topLevelItem(0)  # devuelve un QTreeWidgetItem "mainList"
         playlistItem = self.formatMenu.topLevelItem(1)  # devuelve un QTreeWidgetItem "playlist"
 
