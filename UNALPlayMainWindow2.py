@@ -186,6 +186,7 @@ class Ui_MainWindow(object):
         self.modifyButton.clicked.connect(self.modifyElementInterface)
         self.addButton.clicked.connect(self.elementInterface)
         self.formatMenu.itemSelectionChanged.connect(self.changeCurrentList)
+        self.searchButton.clicked.connect(self.search)
 
         self.formatMenuUpdate()
 
@@ -403,6 +404,45 @@ class Ui_MainWindow(object):
                 self.itemsTable.LoadList()
             else:
                 return
+
+    def search(self):
+        if self.searchBar.text() != "":
+            self.textToSearch = str(self.searchBar.text())
+            if self.currentList == "Main_list":
+                self.currentListObject = Files.MainList(self._format)
+            else:
+                self.currentListObject = Files.Playlist(self._format, self.currentList)
+            self.listT = []  # self.currentListObject.Search(self.text)
+            for object in self.currentListObject.list:
+                if self.textToSearch in object.getName():
+                    self.listT.append(object)
+                elif self.textToSearch in object.getAuthor():
+                    self.listToLoad.append(object)
+                elif self.textToSearch in object.getAlbum():
+                    self.listToLoad.append(object)
+                elif self.textToSearch in object.getYear():
+                    self.listToLoad.append(object)
+                elif self.textToSearch in object.getType():
+                    self.listToLoad.append(object)
+
+            self.itemsTable.setSortingEnabled(False)
+            self.itemsTable.clearContents()
+            self.itemsTable.setRowCount(0)
+            for elem in self.listT:
+                n = self.itemsTable.rowCount()
+                self.itemsTable.setRowCount(n + 1)
+                self.itemsTable.setItem(n, 0, QtWidgets.QTableWidgetItem(elem.getName()))
+                self.itemsTable.setItem(n, 1, QtWidgets.QTableWidgetItem(elem.getAuthor()))
+                self.itemsTable.setItem(n, 2, QtWidgets.QTableWidgetItem(elem.getAlbum()))
+                self.itemsTable.setItem(n, 3, QtWidgets.QTableWidgetItem(elem.getYear()))
+                self.itemsTable.setItem(n, 4, QtWidgets.QTableWidgetItem(elem.getType()))
+                self.itemsTable.setItem(n, 5, QtWidgets.QTableWidgetItem(elem.getPlayable()))
+            self.itemsTable.setSortingEnabled(True)
+        else:
+            if self.currentList == "Main_list":
+                self.itemsTable.Update(self._format)
+            else:
+                self.itemsTable.UpdatePlaylist(self._format, self.currentList)
 
 
 
