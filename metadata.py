@@ -81,7 +81,7 @@ class SelectFileDialog(QtWidgets.QFileDialog):
     Esta clase entra en funcionamiento cuando el ussuario decide escoger una ubicación
     para poder reproducir archivos.
     Tiene las siguientes propiedades:
-    _format: Para manejar el formato, ver módulo Format
+    _format: Para manejar el formato, ver módulos Format, Files, TableManagement
     _filter: Decide si lo que se busca son canciones, fotos, o videos.
     """
     def __init__(self, _format):

@@ -9,8 +9,20 @@ class TableManagement(QtWidgets.QTableWidget):
     """
     Clase TableManagement, hereda de QTableWidget, con la diferencia de que carga
     los archivos, en parte, es una imlpementación gráfica del módulo Files.
+    Tiene las siguientes propiedades:
+    _format: Para manejar el formato, ver módulos Format, Files, TableManagement.
+    selectedEntries: Las entradas seleccionadas de la tabla.
+    filters: En el caso de modifyPlaylist y newPlaylist, solo se desea mostrar
+            los elementos de la Main_list que no están en la playlist abierta.
+    mainList: Mainlist (ver Files.Mainlist)
+
     """
     def __init__(self, _format, parent=None, filters=()):
+        """
+        :param _format: ver Format.
+        :param parent: del tipo QWidget
+        :param filters: Iterable de objetos de Format
+        """
         super().__init__(parent)
 
         self.selectedEntries = []
@@ -21,6 +33,13 @@ class TableManagement(QtWidgets.QTableWidget):
         self.LoadList()
     
     def SetupUi(self):
+        """
+        Inicializa correctametne la cabecera y sus labels, incluyendo
+        algunas característica clave como:
+          setSortingEnabled: Para que la tabla se pueda ordenar por columnas
+          setEditTriggers: Para que no sea modificable de ninguna forma
+        Además, modifica el aspecto de la cabecera dependiendo del formato.
+        """
         self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.setSortingEnabled(True)
@@ -57,6 +76,12 @@ class TableManagement(QtWidgets.QTableWidget):
         self.setHorizontalHeaderLabels(labels)
 
     def LoadList(self):
+        """
+        Carga la lista de la mainList en la tabla.
+        Por cuestiones de la librería (ver documentación de Qt for Python) no es
+        conveniente agregar elementos cuando el ordenamiento está activado, por eso se
+        desactiva y se vuelve a activar.
+        """
         self.setSortingEnabled(False)
         self.clearContents()
         self.setRowCount(0)
@@ -79,6 +104,10 @@ class TableManagement(QtWidgets.QTableWidget):
         self.setSortingEnabled(True)
 
     def getElement(self):
+        """
+        Retorna el elemento seleccionado de la tabla en la forma de un objeto de Format
+        (ya sea de la clase Music, Pictures o Videos)
+        """
         row = self.currentRow()
         elem = {"name": self.item(row, 0).text(),
                 "author": self.item(row, 1).text(),
@@ -89,6 +118,9 @@ class TableManagement(QtWidgets.QTableWidget):
         return self.constructor(elem["name"], elem["author"], elem["album"], elem["year"], elem["type"], "")
 
     def UpdateSelectedEntries(self):
+        """
+        Función interna necesaria para actualizar la lista de los elementos seleccionados
+        """
         for row in range(self.rowCount()):
             item = self.item(row, 0)
             if item.isSelected():
@@ -100,11 +132,13 @@ class TableManagement(QtWidgets.QTableWidget):
                 self.selectedEntries.append(elem)
 
     def Update(self, newFormat):
+        """Acutaliza el formato y vuelve a cargar la lsita principal"""
         self._format = newFormat
         self.mainList = Files.MainList(newFormat)
         self.LoadList()
 
     def UpdatePlaylist(self, newFormat, newPlaylist):
+        """Ifual que su homónimo para Main_list, solo que para playlists"""
         self._format = newFormat
         self.mainList = Files.Playlist(newFormat, newPlaylist)
         self.LoadList()

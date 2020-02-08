@@ -1,6 +1,9 @@
 """Módulo Files, maneja:
     Los archivos y la representación interna de los elementos.*
     Las listas principales y de reproducción.
+    Al igual que Format, este módulo es solo de funcionalidad, la implementación gráfica
+    específica de estos dos módulos se pueden encontrar en newPlaylist, modifyPlaylist,
+    TableManagement, y metadata.
     *Más en el módulo Format."""
 import os
 import Format

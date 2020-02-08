@@ -1,5 +1,9 @@
 """En este módulo se encuentran las clases de los formatos multimedia que se
-manejan en la aplicación: Música, Fotos o Videos."""
+    manejan en la aplicación: Música, Fotos o Videos.
+    Al igual que Files, este módulo es solo de funcionalidad, la implementación gráfica
+    específica de estos dos módulos se pueden encontrar en newPlaylist, modifyPlaylist,
+    TableManagement, y metadata.
+"""
 
 
 class Format:
@@ -86,12 +90,15 @@ class Format:
         return self.__playable
 
     def __eq__(self, other):
+        """Comprueba igualdad entre dos entradas, sin independientemente del formato,
+        retorna True si cumple los criterios de igualdad, y false en caso contrario"""
         equal = self.getName() == other.getName() and self.getAuthor() == other.getAuthor() \
                 and self.getYear() == other.getYear() and self.getAlbum() == other.getAlbum() \
                 and self.getType() == other.getType()
         return equal
 
     def __ne__(self, other):
+        """Negación lógica de función __eq__ (la de igualdad)"""
         return not self.__eq__(other)
 
 

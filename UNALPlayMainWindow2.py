@@ -18,14 +18,23 @@ import TableManagement
 import Files
 
 class Ui_MainWindow(object):
+    """Clase principal"""
     def setupUi(self, MainWindow):
+        """
+        Setup de la GUI, con algunas características añadidas, estas son:
+          _format: ver Format
+          currentList: Para manejar la lista actual a mostrar
+          constructor: Para manejar funcionalidad
+          mainList: Lista principal (ver Files)
+        Hace uso de la librería tkinter para mensajes de advertencia e información.
+        """
         self._format = "music"
         self.currentList = "Main_list"
         self.constructor = Format.Music
         self.mainList = Files.MainList(self._format)
 
         root = tk.Tk()
-        root.withdraw()  # Para evitar la ventana random del tkinter
+        root.withdraw()  # Para evitar la ventana que aparece cuando se activan mensajes de tkinter
 
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
@@ -170,6 +179,7 @@ class Ui_MainWindow(object):
         self.searchButton.setObjectName("searchButton")
         MainWindow.setCentralWidget(self.centralwidget)
 
+        # Aquí es donde se llaman a las funciones creadas
         self.musicFormatButton.clicked.connect(self.changeToMusicFormat)
         self.picturesFormatButton.clicked.connect(self.changeToPicturesFormat)
         self.VideoFormatButton.clicked.connect(self.changeToVideosFormat)
@@ -187,6 +197,10 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def changeToMusicFormat(self):
+        """
+        Cambia al formato de música. Por retranslateUi, la forma como modifica
+        la cabecera de la lista es obligatoria
+        """
         self._format = "music"
         self.currentList = "Main_list"
         self.constructor = Format.Music
@@ -205,6 +219,10 @@ class Ui_MainWindow(object):
         self.formatMenuUpdate()
 
     def changeToVideosFormat(self):
+        """
+        Cambia al formato de videos. Por retranslateUi, la forma como modifica
+        la cabecera de la lista es obligatoria
+        """
         self._format = "videos"
         self.currentList = "Main_list"
         self.constructor = Format.Videos
@@ -223,6 +241,10 @@ class Ui_MainWindow(object):
         self.formatMenuUpdate()
 
     def changeToPicturesFormat(self):
+        """
+        Cambia al formato de fotos. Por retranslateUi, la forma como modifica
+        la cabecera de la lista es obligatoria
+        """
         self._format = "pictures"
         self.currentList = "Main_list"
         self.constructor = Format.Pictures
@@ -241,6 +263,7 @@ class Ui_MainWindow(object):
         self.formatMenuUpdate()
 
     def changeCurrentList(self):
+        """Cambia el parámetro currentList"""
         mainListItem = self.formatMenu.topLevelItem(0)  # devuelve un QTreeWidgetItem "mainList"
         playlistItem = self.formatMenu.topLevelItem(1)  # devuelve un QTreeWidgetItem "playlist"
 
@@ -255,6 +278,9 @@ class Ui_MainWindow(object):
         self.itemsTable.LoadList()
 
     def formatMenuUpdate(self):
+        """
+        Modifica el árbol de playlists
+        """
         self.playlistList = Files.PlaylistList(self._format)
         self.playlists = self.playlistList.GetPlaylists()
         playlistItem = self.formatMenu.topLevelItem(1)  # devuelve un QTreeWidgetItem "playlist"
@@ -263,13 +289,9 @@ class Ui_MainWindow(object):
         for item in self.playlists:
             newItem = QtWidgets.QTreeWidgetItem(playlistItem)
             newItem.setText(0, item)
-            #newItem.clicked.connect(self.itemsTableUpdate())  #Queda pendiente xd
-
-    def itemsTableUpdate(self):
-        pass
-        #funcion creada por juan. Debe actualizar los datos de la tabla de los items
 
     def addPlaylistInterface(self):
+        """Implementa la funcionalidad de newPlaylist"""
         playlistDialog = newPlaylist.Dialog(self._format)
         playlistDialog.show()
 
@@ -290,6 +312,7 @@ class Ui_MainWindow(object):
             self.formatMenuUpdate()
 
     def modifyPlaylistInterface(self):
+        """Implementa la funcionalidad de modifyPlaylist"""
         if self.currentList == "Main_list":
             messagebox.showinfo(message="La lista principal no se modifica de esta forma", title="Alerta")
             return
@@ -311,6 +334,7 @@ class Ui_MainWindow(object):
                     playlist.AddEntry(i)
             playlist.ChangeName(newName)
 
+            # Esta parte está aquí para volver siempre a la Main_list y evitar errores
             mainListItem = self.formatMenu.topLevelItem(0)
             playlistItem = self.formatMenu.topLevelItem(1)
             mainListItem.setSelected(True)
@@ -319,6 +343,7 @@ class Ui_MainWindow(object):
             self.formatMenuUpdate()
 
     def removePlaylist(self):
+        """Elimina la playlist seleccionada"""
         if self.currentList == "Main_list":
             messagebox.showinfo(message="No se puede eliminar la lista principal", title="Alerta")
             return
@@ -329,6 +354,7 @@ class Ui_MainWindow(object):
         else:
             return
         self.formatMenuUpdate()
+        # Esta parte está aquí para volver siempre a la Main_list y evitar errores
         mainListItem = self.formatMenu.topLevelItem(0)
         playlistItem = self.formatMenu.topLevelItem(1)
         mainListItem.setSelected(True)
@@ -336,6 +362,7 @@ class Ui_MainWindow(object):
         self.changeCurrentList()
 
     def elementInterface(self):
+        """Implementación de metadata con modify desactivado, solo funciona en la Main_list"""
         if self.currentList != "Main_list":
             messagebox.showinfo(message="No disponible para listas de reproducción", title="Alerta")
             return
@@ -351,6 +378,7 @@ class Ui_MainWindow(object):
             self.itemsTable.LoadList()
 
     def modifyElementInterface(self):
+        """Implementación de metadata con modify activado, solo funciona en la Main_list"""
         if self.currentList != "Main_list":
             messagebox.showinfo(message="No disponible para listas de reproducción", title="Alerta")
             return
@@ -372,6 +400,7 @@ class Ui_MainWindow(object):
                 self.itemsTable.LoadList()
 
     def removeElement(self):
+        """Elimina un elemento, sirve para la Main_list y para playlists"""
         if len(self.itemsTable.selectedItems()) == 0:
             messagebox.showinfo(message="Seleccione primero el elemento que desea eliminar.", title="Alerta")
             return
@@ -384,9 +413,8 @@ class Ui_MainWindow(object):
             else:
                 return
 
-
-
     def retranslateUi(self, MainWindow):
+        """Para traducir la GUI, generado automáticamente con modificaciones"""
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Inicio"))
         self.appNameLabel.setText(_translate("MainWindow", "UNALPLAY"))

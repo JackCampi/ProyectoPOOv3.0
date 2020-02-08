@@ -7,7 +7,15 @@ import TableManagement
 
 class Dialog(QtWidgets.QDialog):
     """
+    Clase Dialog del módulo modifyPlaylist, la instancia de TableManagement (ver TableManagement)
+    en esta ventana de diálogo permite la selección múltiple, a diferencia de la versión original.
 
+    Al hacer una nueva playlist, se le pueden ingresar elementos de la lista principal asociada
+    directamente.
+
+    Tiene las siguientes propiedades:
+    _format: Para manejar el formato, ver módulos Format, Files, TableManagement
+    tableWidget: instancia de TableManagement (ver TableManegement).
     """
     def __init__(self, _format):
         super().__init__()
@@ -18,6 +26,12 @@ class Dialog(QtWidgets.QDialog):
         self.tableWidget.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
 
     def Items(self):
+        """
+        Retorna en un diccionario el nombre de la nueva lista de reproducción*
+        y las entradas a agregar, las llaves del diccionario son "playlistName" y "selectedEntries"
+
+        *Por seguridad se recomienda usar únicamente ASCII
+        """
         self.tableWidget.UpdateSelectedEntries()
         items = {"playlistName": self.playlistName.text(), "selectedEntries": self.tableWidget.selectedEntries}
         return items
