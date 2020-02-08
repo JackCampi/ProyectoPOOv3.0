@@ -1,9 +1,15 @@
+"""Módulo TableManagement, se encarga de manejar todas las tablas"""
+
 from PyQt5 import QtWidgets, QtCore
 import Files
 import Format
 
 
 class TableManagement(QtWidgets.QTableWidget):
+    """
+    Clase TableManagement, hereda de QTableWidget, con la diferencia de que carga
+    los archivos, en parte, es una imlpementación gráfica del módulo Files.
+    """
     def __init__(self, _format, parent=None, filters=()):
         super().__init__(parent)
 

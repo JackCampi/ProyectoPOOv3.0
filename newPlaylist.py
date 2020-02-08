@@ -1,8 +1,14 @@
+"""Módulo newPLaylist, se encarga de la interfaza de usuario y funcionalidad
+    necesaria para hacer listas de reproducción"""
+
 from PyQt5 import QtWidgets, uic
 import TableManagement
 
 
 class Dialog(QtWidgets.QDialog):
+    """
+
+    """
     def __init__(self, _format):
         super().__init__()
         uic.loadUi("newPlaylist.ui", self)

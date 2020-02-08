@@ -282,6 +282,7 @@ class Ui_MainWindow(object):
                 elems.append(elem)
 
             playlist = Files.Playlist(self._format, name)
+            self.mainList = Files.MainList(self._format)
             for i in self.mainList.list:
                 if i in elems:
                     playlist.AddEntry(i)
@@ -304,6 +305,7 @@ class Ui_MainWindow(object):
                 elems.append(elem)
 
             playlist = Files.Playlist(self._format, self.currentList)
+            self.mainList = Files.MainList(self._format)
             for i in self.mainList.list:
                 if i in elems:
                     playlist.AddEntry(i)

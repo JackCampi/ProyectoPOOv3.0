@@ -1,3 +1,6 @@
+"""Módulo newPLaylist, se encarga de la interfaza de usuario y funcionalidad
+    necesaria para modificar listas de reproducción"""
+
 from PyQt5 import QtWidgets, uic
 import TableManagement
 import Files
