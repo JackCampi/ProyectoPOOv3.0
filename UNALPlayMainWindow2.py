@@ -18,16 +18,13 @@ import TableManagement
 import Files
 
 class Ui_MainWindow(object):
-    """Clase principal"""
+    """Esta clase corresponde a la ventana principal de la aplicación. Aquí se
+    establecen las conexiones entre los botones y los métodos. En esta clase se
+    llaman diferentes módulos de código que aportan al funcionamiento del programa."""
     def setupUi(self, MainWindow):
-        """
-        Setup de la GUI, con algunas características añadidas, estas son:
-          _format: ver Format
-          currentList: Para manejar la lista actual a mostrar
-          constructor: Para manejar funcionalidad
-          mainList: Lista principal (ver Files)
-        Hace uso de la librería tkinter para mensajes de advertencia e información.
-        """
+        """En este método se declaran todos los objetos de la interfaz gráfica,
+        desde los botones, hasta las tablas de elementos. Aquí se hacen las
+        conexiones entre botones y funciones."""
         self._format = "music"
         self.currentList = "Main_list"
         self.constructor = Format.Music
@@ -190,6 +187,7 @@ class Ui_MainWindow(object):
         self.modifyButton.clicked.connect(self.modifyElementInterface)
         self.addButton.clicked.connect(self.elementInterface)
         self.formatMenu.itemSelectionChanged.connect(self.changeCurrentList)
+        self.searchButton.clicked.connect(self.search)
 
         self.formatMenuUpdate()
 
@@ -197,10 +195,10 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def changeToMusicFormat(self):
-        """
-        Cambia al formato de música. Por retranslateUi, la forma como modifica
-        la cabecera de la lista es obligatoria
-        """
+        """cambia el formato sobre el que se está trabajando en la aplicación a Music,
+        así como los textos de las tablas y sus contenidos.
+        - Se ejecuta cuando se activa el botón de música.
+        - Cambia el formatMenu, la itemsTable."""
         self._format = "music"
         self.currentList = "Main_list"
         self.constructor = Format.Music
@@ -219,10 +217,10 @@ class Ui_MainWindow(object):
         self.formatMenuUpdate()
 
     def changeToVideosFormat(self):
-        """
-        Cambia al formato de videos. Por retranslateUi, la forma como modifica
-        la cabecera de la lista es obligatoria
-        """
+        """cambia el formato sobre el que se está trabajando en la aplicación a Videos,
+        así como los textos de las tablas y sus contenidos.
+        - Se ejecuta cuando se activa el botón de videos.
+        - Cambia el formatMenu, la itemsTable."""
         self._format = "videos"
         self.currentList = "Main_list"
         self.constructor = Format.Videos
@@ -241,10 +239,10 @@ class Ui_MainWindow(object):
         self.formatMenuUpdate()
 
     def changeToPicturesFormat(self):
-        """
-        Cambia al formato de fotos. Por retranslateUi, la forma como modifica
-        la cabecera de la lista es obligatoria
-        """
+        """cambia el formato sobre el que se está trabajando en la aplicación a Pictures,
+        así como los textos de las tablas y sus contenidos.
+        - Se ejecuta cuando se activa el botón de Fotos.
+        - Cambia el formatMenu, la itemsTable."""
         self._format = "pictures"
         self.currentList = "Main_list"
         self.constructor = Format.Pictures
@@ -263,9 +261,10 @@ class Ui_MainWindow(object):
         self.formatMenuUpdate()
 
     def changeCurrentList(self):
-        """Cambia el parámetro currentList"""
+        """Actualiza el contenido de la tabla de elementos con el cambio de selección
+        del menú de formatos. Se muestra el contenido de la lista seleccionada."""
         mainListItem = self.formatMenu.topLevelItem(0)  # devuelve un QTreeWidgetItem "mainList"
-        playlistItem = self.formatMenu.topLevelItem(1)  # devuelve un QTreeWidgetItem "playlist"
+        playlistItem = self.formatMenu.topLevelItem(1)  # devuelve un QTreeWidgetItem "playlist".
 
         if mainListItem.isSelected():
             self.currentList = "Main_list"
@@ -412,6 +411,47 @@ class Ui_MainWindow(object):
                 self.itemsTable.LoadList()
             else:
                 return
+
+    def search(self):
+        if self.searchBar.text() != "":
+            self.textToSearch = str(self.searchBar.text())
+            if self.currentList == "Main_list":
+                self.currentListObject = Files.MainList(self._format)
+            else:
+                self.currentListObject = Files.Playlist(self._format, self.currentList)
+            self.listT = []  # self.currentListObject.Search(self.text)
+            for object in self.currentListObject.list:
+                if self.textToSearch in object.getName():
+                    self.listT.append(object)
+                elif self.textToSearch in object.getAuthor():
+                    self.listToLoad.append(object)
+                elif self.textToSearch in object.getAlbum():
+                    self.listToLoad.append(object)
+                elif self.textToSearch in object.getYear():
+                    self.listToLoad.append(object)
+                elif self.textToSearch in object.getType():
+                    self.listToLoad.append(object)
+
+            self.itemsTable.setSortingEnabled(False)
+            self.itemsTable.clearContents()
+            self.itemsTable.setRowCount(0)
+            for elem in self.listT:
+                n = self.itemsTable.rowCount()
+                self.itemsTable.setRowCount(n + 1)
+                self.itemsTable.setItem(n, 0, QtWidgets.QTableWidgetItem(elem.getName()))
+                self.itemsTable.setItem(n, 1, QtWidgets.QTableWidgetItem(elem.getAuthor()))
+                self.itemsTable.setItem(n, 2, QtWidgets.QTableWidgetItem(elem.getAlbum()))
+                self.itemsTable.setItem(n, 3, QtWidgets.QTableWidgetItem(elem.getYear()))
+                self.itemsTable.setItem(n, 4, QtWidgets.QTableWidgetItem(elem.getType()))
+                self.itemsTable.setItem(n, 5, QtWidgets.QTableWidgetItem(elem.getPlayable()))
+            self.itemsTable.setSortingEnabled(True)
+        else:
+            if self.currentList == "Main_list":
+                self.itemsTable.Update(self._format)
+            else:
+                self.itemsTable.UpdatePlaylist(self._format, self.currentList)
+
+
 
     def retranslateUi(self, MainWindow):
         """Para traducir la GUI, generado automáticamente con modificaciones"""
