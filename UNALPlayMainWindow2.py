@@ -16,6 +16,7 @@ import Format
 import newPlaylist
 import TableManagement
 import Files
+import musicInterface
 
 class Ui_MainWindow(object):
     """Esta clase corresponde a la ventana principal de la aplicación. Aquí se
@@ -187,6 +188,7 @@ class Ui_MainWindow(object):
         self.addButton.clicked.connect(self.elementInterface)
         self.formatMenu.itemSelectionChanged.connect(self.changeCurrentList)
         self.searchButton.clicked.connect(self.search)
+        self.itemsTable.itemDoubleClicked.connect(self.playItem)
 
         self.formatMenuUpdate()
 
@@ -444,6 +446,8 @@ class Ui_MainWindow(object):
             else:
                 self.itemsTable.UpdatePlaylist(self._format, self.currentList)
 
+    def playItem(self):
+        print("hola")
 
 
     def retranslateUi(self, MainWindow):
