@@ -188,6 +188,7 @@ class Ui_MainWindow(object):
         self.addButton.clicked.connect(self.elementInterface)
         self.formatMenu.itemSelectionChanged.connect(self.changeCurrentList)
         self.searchButton.clicked.connect(self.search)
+        self.itemsTable.itemDoubleClicked.connect(self.playItem)
 
         self.formatMenuUpdate()
 
@@ -277,12 +278,12 @@ class Ui_MainWindow(object):
         self.itemsTable.LoadList()
 
     def formatMenuUpdate(self):
-        """
-        Modifica el árbol de playlists
-        """
+        """Actualiza la lista de playlists en el menú de formato. Esta
+        función se llama cuando se crea una playlist o cuando se cambia
+        el formato en la aplicación."""
         self.playlistList = Files.PlaylistList(self._format)
         self.playlists = self.playlistList.GetPlaylists()
-        playlistItem = self.formatMenu.topLevelItem(1)  # devuelve un QTreeWidgetItem "playlist"
+        playlistItem = self.formatMenu.topLevelItem(1)
         for i in playlistItem.takeChildren():
             del i
         for item in self.playlists:
@@ -290,7 +291,11 @@ class Ui_MainWindow(object):
             newItem.setText(0, item)
 
     def addPlaylistInterface(self):
-        """Implementa la funcionalidad de newPlaylist"""
+        """Se encarga de abrir el cuadro de diálogo en el que se introduce
+        el nombre de la lista de reproducción y sus nuevos elementos. LLama
+        al módulo newPlaylist.py, donde se encuentra la clase y los métodos
+        de dicho cuadro de diálogo.
+        - Actualiza los datos en el menú de formato."""
         playlistDialog = newPlaylist.Dialog(self._format)
         playlistDialog.show()
 
@@ -311,7 +316,9 @@ class Ui_MainWindow(object):
             self.formatMenuUpdate()
 
     def modifyPlaylistInterface(self):
-        """Implementa la funcionalidad de modifyPlaylist"""
+        """Se encarga de abrir la inerfaz para modificar una lista. En
+        esta se puede introducir el nuevo nombre de la lista y sus nuevos
+        elementos."""
         if self.currentList == "Main_list":
             messagebox.showinfo(message="La lista principal no se modifica de esta forma", title="Alerta")
             return
@@ -342,7 +349,10 @@ class Ui_MainWindow(object):
             self.formatMenuUpdate()
 
     def removePlaylist(self):
-        """Elimina la playlist seleccionada"""
+        """Esta función se encarga de eliminar una playlist de la
+        aplicación, del menú de formato y de los archivos. Se
+        encarga de no eliminar la lista principal usando cuadros de
+        diálogo."""
         if self.currentList == "Main_list":
             messagebox.showinfo(message="No se puede eliminar la lista principal", title="Alerta")
             return
@@ -361,7 +371,11 @@ class Ui_MainWindow(object):
         self.changeCurrentList()
 
     def elementInterface(self):
-        """Implementación de metadata con modify desactivado, solo funciona en la Main_list"""
+        """Esta función se llama cuando se quiere añadir
+        un elemento a la lista principal. Abre un cuadro
+        de diálogo de la librería metadata.py, en la cual
+        se introduce la información del elemento, así como
+        la dirección de su archivo."""
         if self.currentList != "Main_list":
             messagebox.showinfo(message="No disponible para listas de reproducción", title="Alerta")
             return
@@ -377,7 +391,10 @@ class Ui_MainWindow(object):
             self.itemsTable.LoadList()
 
     def modifyElementInterface(self):
-        """Implementación de metadata con modify activado, solo funciona en la Main_list"""
+        """Esta función se llama cuando se desea modificar la información
+        de un elemento. Sólo aplica para la lista principal. Se debe
+        seleccionar primero el elemento que se modificará. Llama al
+        módulo metadata."""
         if self.currentList != "Main_list":
             messagebox.showinfo(message="No disponible para listas de reproducción", title="Alerta")
             return
@@ -399,7 +416,10 @@ class Ui_MainWindow(object):
                 self.itemsTable.LoadList()
 
     def removeElement(self):
-        """Elimina un elemento, sirve para la Main_list y para playlists"""
+        """Esta función elimina el elemento seleccionado. Para
+        ello se debe seleccionar primero el elemento y luego darle
+        click al botón de eliminar. Pregunta si desea eliminar el
+        elemento, antes de borrarlo de las listas y los archivos."""
         if len(self.itemsTable.selectedItems()) == 0:
             messagebox.showinfo(message="Seleccione primero el elemento que desea eliminar.", title="Alerta")
             return
@@ -413,6 +433,10 @@ class Ui_MainWindow(object):
                 return
 
     def search(self):
+        """Esta función se encarga de buscar algún elemento dentro
+        de una lista, ya sea por su nombre, su autor o por cualquiera
+        de sus características. Se encarga de actualizar la lista con
+        los resultados de búsqueda."""
         if self.searchBar.text() != "":
             self.textToSearch = str(self.searchBar.text())
             if self.currentList == "Main_list":
@@ -451,10 +475,17 @@ class Ui_MainWindow(object):
             else:
                 self.itemsTable.UpdatePlaylist(self._format, self.currentList)
 
+    def playItem(self):
+        """Esta función se encarga de reproducir el
+        archivo multimedia, siempre y cuando este sea
+        reproducible (cuando se introdujo un archivo
+        en la interfaz de añadir o modificar)."""
+        print("hola")
 
 
     def retranslateUi(self, MainWindow):
-        """Para traducir la GUI, generado automáticamente con modificaciones"""
+        """Esta función le inserta los textos a los widgets de
+        la aplicación al ser ejecutada."""
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Inicio"))
         self.appNameLabel.setText(_translate("MainWindow", "UNALPLAY"))
@@ -482,6 +513,8 @@ class Ui_MainWindow(object):
 
 
 if __name__ == "__main__":
+    """Aquí se ejecuta el código de la interfaz. Se crea el objeto de
+    MainWindow y lo muestra en pantalla."""
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
